@@ -10,14 +10,39 @@
 //potentially you can use the values to symbolise a specific color, 
 //this might not be done in this implimitation depending on available time
 int playingGrid[10][20]={0};
+int score=0;
+int gameon =1;
+int mult=1;
+
+struct shapes currentshape;
 
 
-
+void gameOver();
+int gameOverCheck();
 int reachedBottom();
 void newBlock();
 void lockPos();
-int gamesstate();
-struct shapes currentshape;
+void right();
+void left();
+int gameState();
+int checkRows();
+void score(int rows);
+void rotate();  
+void rotateBlock(int pivotx,int pivoty);
+void down();
+int isValid();
+
+void handle_interrupt(unsigned cause){
+    if(cause==){
+        right();
+    }
+    if(cause==){
+        left();
+    }
+    gameState();
+}
+
+
 /** reachedBottom
  * type: the type of block ie. L, I etc.
  * x: current x position (read each blocks center postion in there implimitation)
@@ -26,14 +51,14 @@ struct shapes currentshape;
  * returns an in with value 0 if the block cant move and any other value otherwise
  */
 int reachedBottom(){
-    int y1 = currentshape.y1;
-    int y2 = currentshape.y2;
-    int y3 = currentshape.y3;
-    int y4 = currentshape.y4;
-    int x1 = currentshape.x1;
-    int x2 = currentshape.x2;
-    int x3 = currentshape.x3;
-    int x4 = currentshape.x4;
+    int y1 = currentshape.y[0] +1;
+    int y2 = currentshape.y[1] +1;
+    int y3 = currentshape.y[2] +1;
+    int y4 = currentshape.y[3] +1;
+    int x1 = currentshape.x[0];
+    int x2 = currentshape.x[1];
+    int x3 = currentshape.x[2];
+    int x4 = currentshape.x[3];
     if(playingGrid[x1][y1]==1||y1==20){
         return 1;
     }
@@ -54,160 +79,301 @@ int reachedBottom(){
  * no inputs
  * no returns
  */
-void newBlcok(){
+void newBlock(){
     int x = rand();
     switch (x)
     {
     case  0: //I block
         currentshape.type=0;
-        currentshape.x1=5;
-        currentshape.x2=5;
-        currentshape.x3=5;
-        currentshape.x4=5;
-        currentshape.y1=0;
-        currentshape.y2=1;
-        currentshape.y3=2;
-        currentshape.y4=3;
+        currentshape.x[0]=5;
+        currentshape.x[1]=5;
+        currentshape.x[2]=5;
+        currentshape.x[3]=5;
+        currentshape.y[0]=0;
+        currentshape.y[1]=1;
+        currentshape.y[2]=2;
+        currentshape.y[3]=3;
         
         break;
     case  1: //O block
         currentshape.type=1;
-        currentshape.x1=5;
-        currentshape.x2=6;
-        currentshape.x3=5;
-        currentshape.x4=6;
-        currentshape.y1=0;
-        currentshape.y2=0;
-        currentshape.y3=1;
-        currentshape.y4=1;
+        currentshape.x[0]=5;
+        currentshape.x[1]=6;
+        currentshape.x[2]=5;
+        currentshape.x[3]=6;
+        currentshape.y[0]=0;
+        currentshape.y[1]=0;
+        currentshape.y[2]=1;
+        currentshape.y[3]=1;
         
         break;
     case  2:// L shape
         currentshape.type=2;
-        currentshape.x1=5;
-        currentshape.x2=5;
-        currentshape.x3=5;
-        currentshape.x4=6;
-        currentshape.y1=0;
-        currentshape.y2=1;
-        currentshape.y3=2;
-        currentshape.y4=2;
+        currentshape.x[0]=5;
+        currentshape.x[1]=5;
+        currentshape.x[2]=5;
+        currentshape.x[3]=6;
+        currentshape.y[0]=0;
+        currentshape.y[1]=1;
+        currentshape.y[2]=2;
+        currentshape.y[3]=2;
         break;
     case  3: //J shape
         currentshape.type=3;
-        currentshape.x1=5;
-        currentshape.x2=5;
-        currentshape.x3=5;
-        currentshape.x4=4;
-        currentshape.y1=0;
-        currentshape.y2=1;
-        currentshape.y3=2;
-        currentshape.y4=2;
+        currentshape.x[0]=5;
+        currentshape.x[1]=5;
+        currentshape.x[2]=5;
+        currentshape.x[3]=4;
+        currentshape.y[0]=0;
+        currentshape.y[1]=1;
+        currentshape.y[2]=2;
+        currentshape.y[3]=2;
         break;
     case  4: //T block
         currentshape.type=4;
-        currentshape.x1=5;
-        currentshape.x2=4;
-        currentshape.x3=6;
-        currentshape.x4=5;
-        currentshape.y1=0;
-        currentshape.y2=0;
-        currentshape.y3=0;
-        currentshape.y4=1;
+        currentshape.x[0]=5;
+        currentshape.x[1]=4;
+        currentshape.x[2]=6;
+        currentshape.x[3]=5;
+        currentshape.y[0]=0;
+        currentshape.y[1]=0;
+        currentshape.y[2]=0;
+        currentshape.y[3]=1;
         break;
     case  5: //S block
         currentshape.type=5;
-        currentshape.x1=5;
-        currentshape.x2=6;
-        currentshape.x3=5;
-        currentshape.x4=4;
-        currentshape.y1=0;
-        currentshape.y2=0;
-        currentshape.y3=1;
-        currentshape.y4=1;
+        currentshape.x[0]=5;
+        currentshape.x[1]=6;
+        currentshape.x[2]=5;
+        currentshape.x[3]=4;
+        currentshape.y[0]=0;
+        currentshape.y[1]=0;
+        currentshape.y[2]=1;
+        currentshape.y[3]=1;
         break;
     case  6: //T block
         currentshape.type=6;
-        currentshape.x1=5;
-        currentshape.x2=4;
-        currentshape.x3=5;
-        currentshape.x4=6;
-        currentshape.y1=0;
-        currentshape.y2=0;
-        currentshape.y3=1;
-        currentshape.y4=1;
+        currentshape.x[0]=5;
+        currentshape.x[1]=4;
+        currentshape.x[2]=5;
+        currentshape.x[3]=6;
+        currentshape.y[0]=0;
+        currentshape.y[1]=0;
+        currentshape.y[2]=1;
+        currentshape.y[3]=1;
         break;
     default:
         break;
     }
 }
 void lockPos(){
-    playingGrid[currentshape.x1][currentshape.y1]=1;
-    playingGrid[currentshape.x2][currentshape.y2]=1;
-    playingGrid[currentshape.x3][currentshape.y3]=1;
-    playingGrid[currentshape.x4][currentshape.y4]=1;
+    playingGrid[currentshape.x[0]][currentshape.y[0]]=1;
+    playingGrid[currentshape.x[1]][currentshape.y[1]]=1;
+    playingGrid[currentshape.x[2]][currentshape.y[2]]=1;
+    playingGrid[currentshape.x[3]][currentshape.y[3]]=1;
 }
+
+/**gameState
+ * controlls the flow of the game and the grid
+ */
 int gameState(){
+    if(reachedBottom()==1){
+        lockPos();
+        score(checkRows());
+        newBlock();
+    }
+    if(gameOverCheck()==0){
+            gameOver();
+        }
+}
+/**right
+ * moves the player right if it is a lega move
+ * 
+ */
+void right(){
+    struct shapes prev=currentshape;
+    currentshape.x[0]++;
+    currentshape.x[1]++;
+    currentshape.x[2]++;
+    currentshape.x[3]++;
+    if(!isValid()){
+        currentshape=prev;
+    }
+}
+/**left
+ * moves the user left if it is a legal move
+ * no input
+ * no return value
+ */
+void left(){
+   struct shapes prev=currentshape;
+    currentshape.x[0]--;
+    currentshape.x[1]--;
+    currentshape.x[2]--;
+    currentshape.x[3]--;
+    if(!isValid()){
+        currentshape=prev;
+    }
+}
+
+/**checkRows
+ * checks if any row is filled, if so is the case delets it and send it to points
+ *  returns an int wich is the number of rows cleared
+ */
+int checkRows(){
+    int rowsCleared=0;
+    //outer loop to go through each row
+    for(int y=19;y>=0; y--){
+        int rowfull=1;
+        //iner loop to check each box in a row
+        for (int x=0; x < 10; x++)
+        {
+          if(playingGrid[x][y]!=1){
+            rowfull=0;
+            break;
+          }  
+        }
+        //if a row is full we clear it and increase the score
+        if(rowfull==1){
+            rowsCleared++;
+            //reset row
+            for (int x=0; x < 10; x++)
+            {
+                playingGrid[x][y]=0;
+            }
+            //gravity/pull down the rows above
+            for (int y2 = y; y2 > 0; y2--) {
+                    for (int x = 0; x < 10; x++) {
+                        playingGrid[x][y2] = playingGrid[x][y2-1];
+                    }
+            }
+            //reset top row
+            for (int x = 0; x < 10; x++) {
+                playingGrid[x][0] = 0;
+            }
+            y++;
+        }
+    }
+    return rowsCleared;
+}
+
+/** game over check
+ * if the top row has a block the game is over
+ */
+int gameOverCheck(){
+    for (int x=0; x < 10; x++)
+        {
+          if(playingGrid[x][0]==1){
+            return 0;
+          }  
+        }
+        return 1;
+}
+
+void gameOver(){
 
 }
-void right(){
-    int y1 = currentshape.y1;
-    int y2 = currentshape.y2;
-    int y3 = currentshape.y3;
-    int y4 = currentshape.y4;
-    int x1 = currentshape.x1+1;
-    int x2 = currentshape.x2+1;
-    int x3 = currentshape.x3+1;
-    int x4 = currentshape.x4+1;
-     if(playingGrid[x1][y1]==1||x1==10){
-        return;
-    }
-    if(playingGrid[x2][y2]==1||x2==10){
-        return;
-    }
-    if(playingGrid[x3][y3]==1||x3==10){
-        return;
-    }
-    if(playingGrid[x4][y4]==1||x4==10){
-        return;
-    }
-    currentshape.x1=x1;
-    currentshape.x2=x2;
-    currentshape.x3=x3;
-    currentshape.x4=x4;
+
+void score(int rows){
+    int tot = rows;
+    tot*=mult;
+    score+=tot;
 }
-void left(){
-    int y1 = currentshape.y1;
-    int y2 = currentshape.y2;
-    int y3 = currentshape.y3;
-    int y4 = currentshape.y4;
-    int x1 = currentshape.x1-1;
-    int x2 = currentshape.x2-1;
-    int x3 = currentshape.x3-1;
-    int x4 = currentshape.x4-1;
-    //check that the move is legal, both that the position is not ocupied
-    //and that the next value is inside the grid
-    if(playingGrid[x1][y1]==1||x1==-1){
-        return;
+//
+void rotate( ){
+    struct shapes prev=currentshape;
+    switch (currentshape.type)
+    {
+     case  0: //I block
+       rotateBlock(currentshape.x[1],currentshape.y[1]);
+        break;
+    case  1: //O block
+        break;
+    case  2:// L shape
+        rotateBlock(currentshape.x[2],currentshape.y[2]);
+        break;
+    case  3: //J shape
+        rotateBlock(currentshape.x[3],currentshape.y[3]);
+        break;
+    case  4: //T block
+        rotateBlock(currentshape.x[0],currentshape.y[0]);
+        break;
+    case  5: //S block
+        rotateBlock(currentshape.x[0],currentshape.y[0]);
+        break;
+    case  6: //T block
+        rotateBlock(currentshape.x[0],currentshape.y[0]);
+        break;
+    default:
+        break;
     }
-    if(playingGrid[x2][y2]==1||x2==-1){
-        return;
+    if(!isValid()){
+        currentshape=prev;
     }
-    if(playingGrid[x3][y3]==1||x3==-1){
-        return;
+}
+/**helper function for rotate 
+ * rotates using matrix multiplication on a pivot
+ * (check linalg)
+ */
+void rotateBlock(int pivotx, int pivoty){
+    int tempx;
+    int tempy;
+
+    for(int i =0;i<4;i++){
+        //pos relative to pivot
+        int relx = currentshape.x[i] - pivotx;
+        int rely = currentshape.y[i] - pivoty;
+
+        tempx=-rely;
+        tempy=relx;
+
+        currentshape.x[i]=pivotx+tempx;
+        currentshape.y[i]=pivoty+tempy;
     }
-    if(playingGrid[x4][y4]==1||x4==-1){
-        return;
+
+
+
+}
+
+void down(){
+    currentshape.y[0]++;
+    currentshape.y[1]++;
+    currentshape.y[2]++;
+    currentshape.y[3]++;
+}
+
+int isValid(){
+  int blocks[4][2] = {
+        {currentshape.x[0], currentshape.y[0]},
+        {currentshape.x[1], currentshape.y[1]},
+        {currentshape.x[2], currentshape.y[2]},
+        {currentshape.x[3], currentshape.y[3]}
+    };
+    
+    for (int i = 0; i < 4; i++) {
+        int x = blocks[i][0];
+        int y = blocks[i][1];
+        
+        // Check boundaries
+        if (x < 0 || x >= 10 || y < 0 || y >= 20) {
+            return 0;
+        }
+        
+        // Check collision with placed blocks
+        if (playingGrid[x][y] != 0) {
+            return 0;
+        }
     }
-    currentshape.x1=x1;
-    currentshape.x2=x2;
-    currentshape.x3=x3;
-    currentshape.x4=x4;
+    return 1;
 }
 
 int main(int argc, char const *argv[])
 {
     srand(time(NULL));
+    while (gameon==1)
+    {
+
+    }
     
     return 0;
 }
