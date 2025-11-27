@@ -104,6 +104,25 @@ void draw_grid(void)
     }
 }
 
+void draw_background(void) 
+{
+	draw_grid(); 
+
+	for (int x = 0; x < GRID_LEFT; x++) {
+		for (int y = 0; y < SCREEN_HEIGHT; y++) {
+			put_pixel(x,y,COLOR_BACKGROUND); }
+		}
+	
+	for (int x = GRID_LEFT + 120 + 1; x < SCREEN_WIDTH; x++) {
+		for (int y = 0; y < SCREEN_HEIGHT; y++) {
+			put_pixel(x,y,COLOR_BACKGROUND); }
+		}
+		
+}
+
+
+
+
 void vga_show_frame(void)
 {
     vga_ctrl[1] = (unsigned int)frame0; // BackBuffer = frame0

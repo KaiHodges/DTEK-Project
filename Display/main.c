@@ -7,7 +7,7 @@ int main()
 {
 	clear_screen();
 
-	draw_grid();
+	draw_background();
 	
 	fill_square(3,10,COLOR_RED);
 	fill_square(4,10,COLOR_RED); 
