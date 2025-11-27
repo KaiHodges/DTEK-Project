@@ -33,12 +33,6 @@ void down();
 int isValid();
 
 void handle_interrupt(unsigned cause){
-    if(cause==){
-        right();
-    }
-    if(cause==){
-        left();
-    }
     gameState();
 }
 
