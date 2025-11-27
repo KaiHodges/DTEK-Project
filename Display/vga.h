@@ -20,6 +20,7 @@
 #define COLOR_WHITE RGB332(7, 7, 3)
 #define COLOR_GRID RGB332(5, 5, 2)
 #define COLOR_RED RGB332(5, 0, 0)
+#define COLOR_BACKGROUND RGB332(3,4,2)
 
 // Framebuffers and control registers (defined in vga.c)
 extern volatile unsigned char *frame0;
@@ -31,6 +32,7 @@ void put_pixel(int x, int y, unsigned char color);
 void clear_screen();
 void fill_square(int x, int y, unsigned char color);
 void draw_grid(void);
+void draw_background(void);
 
 // Swap to show current frame
 void vga_show_frame(void);
