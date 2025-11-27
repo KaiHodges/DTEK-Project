@@ -10,11 +10,14 @@
 //potentially you can use the values to symbolise a specific color, 
 //this might not be done in this implimitation depending on available time
 int playingGrid[10][20]={0};
-int score=0;
+int scores=0;
 int gameon =1;
-int mult=1;
+int mult = 1;
+int invocations = 0;
+
 
 struct shapes currentshape;
+struct shapes stored;
 
 
 void gameOver();
@@ -31,9 +34,79 @@ void rotate();
 void rotateBlock(int pivotx,int pivoty);
 void down();
 int isValid();
+void store();
+void setpos(struct shapes *shape);
 
 void handle_interrupt(unsigned cause){
+     if (cause==16){
+  volatile short* volatile TO; 
+  TO=(short*)0x04000020;
+  *TO=0;
+  invocations++;
+  if(invocations==10/mult){
+    invocations=0;
+    down();
+  
+  }
+//button
+}if(cause==18){
+    volatile int *  ptr;
+    ptr=(int*)0x040000d0;
+    int press = *ptr & 0xF;
+    if(press==1){
+        left();
+    }
+    if(press==2){
+        store();
+    }
+    if(press==4){
+        rotate();
+    }
+    if(press==8){
+        right();
+    }
+
+
+    ptr+=3;
+    int config=*ptr;
+    config|=1<<0;
+    *ptr=config;
+  
+}
     gameState();
+}
+
+/**
+ * 
+ * 
+ */
+void labinit(void)
+{
+  enable_interrupt();
+  volatile int* volatile ptr; 
+  ptr=(int*)0x4000020;
+  *ptr=0;
+  int time = 3000000; //30 Mhz/10 is 3 million actions to get 100 ms  
+  int periodh = time>>16;
+  int periodl = time & 0xffff;
+  ptr+=2;
+  *ptr=periodl;
+  ptr+=1;
+  *ptr=periodh;
+  ptr-=2;
+  int config = *ptr;
+  config|=1<<2; // bitwise logic to set bitt <<k to one
+  config|=1<<1;
+  config|=1<<0;
+  *ptr=config;
+
+  //buttons
+  volatile int *  ptr2;
+  ptr2=(int*)0x040000d0;
+  ptr2+=2;
+  *ptr2=1;
+  ptr2++;
+  
 }
 
 
@@ -75,86 +148,85 @@ int reachedBottom(){
  */
 void newBlock(){
     int x = rand();
-    switch (x)
+    currentshape.type=x;
+    setpos(&currentshape);
+}
+void setpos(struct shapes *shape){
+    switch ( (*shape).type)
     {
     case  0: //I block
-        currentshape.type=0;
-        currentshape.x[0]=5;
-        currentshape.x[1]=5;
-        currentshape.x[2]=5;
-        currentshape.x[3]=5;
-        currentshape.y[0]=0;
-        currentshape.y[1]=1;
-        currentshape.y[2]=2;
-        currentshape.y[3]=3;
+        
+        (*shape).x[0]=5;
+        (*shape).x[1]=5;
+        (*shape).x[2]=5;
+        (*shape).x[3]=5;
+        (*shape).y[0]=0;
+        (*shape).y[1]=1;
+        (*shape).y[2]=2;
+        (*shape).y[3]=3;
         
         break;
     case  1: //O block
-        currentshape.type=1;
-        currentshape.x[0]=5;
-        currentshape.x[1]=6;
-        currentshape.x[2]=5;
-        currentshape.x[3]=6;
-        currentshape.y[0]=0;
-        currentshape.y[1]=0;
-        currentshape.y[2]=1;
-        currentshape.y[3]=1;
+        
+        (*shape).x[0]=5;
+        (*shape).x[1]=6;
+        (*shape).x[2]=5;
+        (*shape).x[3]=6;
+        (*shape).y[0]=0;
+        (*shape).y[1]=0;
+        (*shape).y[2]=1;
+        (*shape).y[3]=1;
         
         break;
     case  2:// L shape
-        currentshape.type=2;
-        currentshape.x[0]=5;
-        currentshape.x[1]=5;
-        currentshape.x[2]=5;
-        currentshape.x[3]=6;
-        currentshape.y[0]=0;
-        currentshape.y[1]=1;
-        currentshape.y[2]=2;
-        currentshape.y[3]=2;
+        (*shape).x[0]=5;
+        (*shape).x[1]=5;
+        (*shape).x[2]=5;
+        (*shape).x[3]=6;
+        (*shape).y[0]=0;
+        (*shape).y[1]=1;
+        (*shape).y[2]=2;
+        (*shape).y[3]=2;
         break;
     case  3: //J shape
-        currentshape.type=3;
-        currentshape.x[0]=5;
-        currentshape.x[1]=5;
-        currentshape.x[2]=5;
-        currentshape.x[3]=4;
-        currentshape.y[0]=0;
-        currentshape.y[1]=1;
-        currentshape.y[2]=2;
-        currentshape.y[3]=2;
+        (*shape).x[0]=5;
+        (*shape).x[1]=5;
+        (*shape).x[2]=5;
+        (*shape).x[3]=4;
+        (*shape).y[0]=0;
+        (*shape).y[1]=1;
+        (*shape).y[2]=2;
+        (*shape).y[3]=2;
         break;
     case  4: //T block
-        currentshape.type=4;
-        currentshape.x[0]=5;
-        currentshape.x[1]=4;
-        currentshape.x[2]=6;
-        currentshape.x[3]=5;
-        currentshape.y[0]=0;
-        currentshape.y[1]=0;
-        currentshape.y[2]=0;
-        currentshape.y[3]=1;
+        (*shape).x[0]=5;
+        (*shape).x[1]=4;
+        (*shape).x[2]=6;
+        (*shape).x[3]=5;
+        (*shape).y[0]=0;
+        (*shape).y[1]=0;
+        (*shape).y[2]=0;
+        (*shape).y[3]=1;
         break;
     case  5: //S block
-        currentshape.type=5;
-        currentshape.x[0]=5;
-        currentshape.x[1]=6;
-        currentshape.x[2]=5;
-        currentshape.x[3]=4;
-        currentshape.y[0]=0;
-        currentshape.y[1]=0;
-        currentshape.y[2]=1;
-        currentshape.y[3]=1;
+        (*shape).x[0]=5;
+        (*shape).x[1]=6;
+        (*shape).x[2]=5;
+        (*shape).x[3]=4;
+        (*shape).y[0]=0;
+        (*shape).y[1]=0;
+        (*shape).y[2]=1;
+        (*shape).y[3]=1;
         break;
     case  6: //T block
-        currentshape.type=6;
-        currentshape.x[0]=5;
-        currentshape.x[1]=4;
-        currentshape.x[2]=5;
-        currentshape.x[3]=6;
-        currentshape.y[0]=0;
-        currentshape.y[1]=0;
-        currentshape.y[2]=1;
-        currentshape.y[3]=1;
+        (*shape).x[0]=5;
+        (*shape).x[1]=4;
+        (*shape).x[2]=5;
+        (*shape).x[3]=6;
+        (*shape).y[0]=0;
+        (*shape).y[1]=0;
+        (*shape).y[2]=1;
+        (*shape).y[3]=1;
         break;
     default:
         break;
@@ -174,11 +246,13 @@ int gameState(){
     if(reachedBottom()==1){
         lockPos();
         score(checkRows());
+        if(gameOverCheck()==0){
+            gameOver();
+            return 0;
+        }
         newBlock();
     }
-    if(gameOverCheck()==0){
-            gameOver();
-        }
+    return 1;
 }
 /**right
  * moves the player right if it is a lega move
@@ -265,13 +339,17 @@ int gameOverCheck(){
 }
 
 void gameOver(){
-
+gameon=0;
 }
 
 void score(int rows){
-    int tot = rows;
+    int tot = 100*rows;
     tot*=mult;
-    score+=tot;
+    scores+=tot;
+    mult=scores/1000;
+    if(mult<1){
+        mult=1;
+    }
 }
 //
 void rotate( ){
@@ -361,9 +439,26 @@ int isValid(){
     return 1;
 }
 
+void store(){
+    if(stored.type==-1){
+        stored=currentshape;
+        newBlock;
+    }else{
+    struct shapes temp;
+    temp=currentshape;
+    currentshape=stored;
+    stored=temp; 
+    setpos(&currentshape);
+    }
+}
+
+
 int main(int argc, char const *argv[])
 {
+    stored.type=-1;
+    labinit();
     srand(time(NULL));
+    newBlock();
     while (gameon==1)
     {
 
