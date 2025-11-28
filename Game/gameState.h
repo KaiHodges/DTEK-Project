@@ -77,14 +77,14 @@ int reachedBottom(){
  * no returns
  */
 void newBlock(){
-    int x = rand();
+    int x = rand()+1;
     currentshape.type=x;
     setpos(&currentshape);
 }
 void setpos(struct shapes *shape){
     switch ( (*shape).type)
     {
-    case  0: //I block
+    case  1: //I block
         
         (*shape).x[0]=5;
         (*shape).x[1]=5;
@@ -96,7 +96,7 @@ void setpos(struct shapes *shape){
         (*shape).y[3]=3;
         
         break;
-    case  1: //O block
+    case  2: //O block
         
         (*shape).x[0]=5;
         (*shape).x[1]=6;
@@ -108,7 +108,7 @@ void setpos(struct shapes *shape){
         (*shape).y[3]=1;
         
         break;
-    case  2:// L shape
+    case  3:// L shape
         (*shape).x[0]=5;
         (*shape).x[1]=5;
         (*shape).x[2]=5;
@@ -118,7 +118,7 @@ void setpos(struct shapes *shape){
         (*shape).y[2]=2;
         (*shape).y[3]=2;
         break;
-    case  3: //J shape
+    case  4: //J shape
         (*shape).x[0]=5;
         (*shape).x[1]=5;
         (*shape).x[2]=5;
@@ -128,7 +128,7 @@ void setpos(struct shapes *shape){
         (*shape).y[2]=2;
         (*shape).y[3]=2;
         break;
-    case  4: //T block
+    case  5: //T block
         (*shape).x[0]=5;
         (*shape).x[1]=4;
         (*shape).x[2]=6;
@@ -138,7 +138,7 @@ void setpos(struct shapes *shape){
         (*shape).y[2]=0;
         (*shape).y[3]=1;
         break;
-    case  5: //S block
+    case  6: //S block
         (*shape).x[0]=5;
         (*shape).x[1]=6;
         (*shape).x[2]=5;
@@ -148,7 +148,7 @@ void setpos(struct shapes *shape){
         (*shape).y[2]=1;
         (*shape).y[3]=1;
         break;
-    case  6: //T block
+    case  7: //T block
         (*shape).x[0]=5;
         (*shape).x[1]=4;
         (*shape).x[2]=5;
@@ -227,7 +227,7 @@ int checkRows(){
         //iner loop to check each box in a row
         for (int x=0; x < 10; x++)
         {
-          if(playingGrid[x][y]!=1){
+          if(playingGrid[x][y]!=0){
             rowfull=0;
             break;
           }  
@@ -262,7 +262,7 @@ int checkRows(){
 int gameOverCheck(){
     for (int x=0; x < 10; x++)
         {
-          if(playingGrid[x][0]==1){
+          if(playingGrid[x][0]!=0){
             return 0;
           }  
         }
@@ -287,24 +287,24 @@ void rotate( ){
     struct shapes prev=currentshape;
     switch (currentshape.type)
     {
-     case  0: //I block
+     case 1: //I block
        rotateBlock(currentshape.x[1],currentshape.y[1]);
         break;
-    case  1: //O block
+    case  2: //O block
         break;
-    case  2:// L shape
+    case  3:// L shape
         rotateBlock(currentshape.x[2],currentshape.y[2]);
         break;
-    case  3: //J shape
+    case  4: //J shape
         rotateBlock(currentshape.x[3],currentshape.y[3]);
         break;
-    case  4: //T block
+    case  5: //T block
         rotateBlock(currentshape.x[0],currentshape.y[0]);
         break;
-    case  5: //S block
+    case  6: //S block
         rotateBlock(currentshape.x[0],currentshape.y[0]);
         break;
-    case  6: //T block
+    case  7: //T block
         rotateBlock(currentshape.x[0],currentshape.y[0]);
         break;
     default:
@@ -373,7 +373,7 @@ int isValid(){
 void store(){
     if(stored.type==-1){
         stored=currentshape;
-        newBlock;
+        newBlock();
     }else{
     struct shapes temp;
     temp=currentshape;
@@ -388,17 +388,13 @@ void start(){
     labinit();
     srand(time(NULL));
     newBlock();
-    for (int i = 0; i < 20; i++){
-        for (int j = 0; j < 10; j++){
-            playingGrid[i][j] = 0;
+    for (int y = 0; y < 20; y++){
+        for (int x = 0; x < 10; x++){
+            playingGrid[x][y] = 0;
         }
     }
     scores=0;
     gameon =1;
     mult = 1;
     invocations = 0;
-}
-int main(int argc, char const *argv[])
-{   
-    return 0;
 }
