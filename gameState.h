@@ -4,8 +4,8 @@
 #include "shapes.h"
 #define RAND_MAX = 6;
 
-//the playing grid which is a 10 by 20 grid, where first element is row and second column,
-//i.e x and y, [0][0] is the top left corner and [10][20] is bottom right corner
+//the playing grid wich is a 10 by 20 grid, where first element is row and second colum,
+//ie x and y, [0][0] is the top left corner and [10][20 is bottom right corner
 //here 0 symbolises empty and NOT 0 symbolizes that is filled by a block.
 //potentially you can use the values to symbolise a specific color, 
 //this might not be done in this implimitation depending on available time
@@ -74,6 +74,7 @@ void handle_interrupt(unsigned cause){
   
 }
     gameState();
+
 }
 
 /**
@@ -126,16 +127,16 @@ int reachedBottom(){
     int x2 = currentshape.x[1];
     int x3 = currentshape.x[2];
     int x4 = currentshape.x[3];
-    if(playingGrid[x1][y1]==1||y1==20){
+    if(playingGrid[x1][y1]!=0||y1==20){
         return 1;
     }
-    if(playingGrid[x2][y2]==1||y2==20){
+    if(playingGrid[x2][y2]!=0||y2==20){
         return 1;
     }
-    if(playingGrid[x3][y3]==1||y3==20){
+    if(playingGrid[x3][y3]!=0||y3==20){
         return 1;
     }
-    if(playingGrid[x4][y4]==1||y4==20){
+    if(playingGrid[x4][y4]!=0||y4==20){
         return 1;
     }
     return 0;
@@ -233,10 +234,11 @@ void setpos(struct shapes *shape){
     }
 }
 void lockPos(){
-    playingGrid[currentshape.x[0]][currentshape.y[0]]=1;
-    playingGrid[currentshape.x[1]][currentshape.y[1]]=1;
-    playingGrid[currentshape.x[2]][currentshape.y[2]]=1;
-    playingGrid[currentshape.x[3]][currentshape.y[3]]=1;
+    int type = currentshape.type;
+    playingGrid[currentshape.x[0]][currentshape.y[0]]=type;
+    playingGrid[currentshape.x[1]][currentshape.y[1]]=type;
+    playingGrid[currentshape.x[2]][currentshape.y[2]]=type;
+    playingGrid[currentshape.x[3]][currentshape.y[3]]=type;
 }
 
 /**gameState
@@ -255,7 +257,7 @@ int gameState(){
     return 1;
 }
 /**right
- * moves the player right if it is a legal move
+ * moves the player right if it is a lega move
  * 
  */
 void right(){
@@ -452,17 +454,18 @@ void store(){
     }
 }
 
-
-int main(int argc, char const *argv[])
-{
+void start(){
     stored.type=-1;
     labinit();
     srand(time(NULL));
     newBlock();
-    while (gameon==1)
-    {
-
-    }
-    
+    playingGrid[][]={0};
+    scores=0;
+    gameon =1;
+    mult = 1;
+    invocations = 0;
+}
+int main(int argc, char const *argv[])
+{   
     return 0;
 }
