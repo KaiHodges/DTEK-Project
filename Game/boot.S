@@ -128,6 +128,7 @@ loop:	j loop
 
 enable_interrupt:
 	csrsi mie,16
+	csrsi mie,17
 	csrsi mie,18
 	
 	
