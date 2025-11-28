@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stbool.h>
 #include "vga.h"
 
 #define CELL_SIZE   12
@@ -12,7 +13,10 @@
 const BlockColor COLOR_RED   = { COLOR_RED_FILL,   COLOR_RED_BORDER };
 const BlockColor COLOR_BLUE  = { COLOR_BLUE_FILL,  COLOR_BLUE_BORDER };
 const BlockColor COLOR_GREEN = { COLOR_GREEN_FILL, COLOR_GREEN_BORDER };
-
+const BlockColor COLOR_YELLOW  = { COLOR_YELLOW_FILL,  COLOR_YELLOW_BORDER };
+const BlockColor COLOR_CYAN    = { COLOR_CYAN_FILL,    COLOR_CYAN_BORDER };
+const BlockColor COLOR_PURPLE  = { COLOR_PURPLE_FILL,  COLOR_PURPLE_BORDER };
+const BlockColor COLOR_ORANGE  = { COLOR_ORANGE_FILL,  COLOR_ORANGE_BORDER };
 
 /* pointers to image buffers to create the images,
  * also a pointer to vga controls to choose image being displayed. 
@@ -20,6 +24,9 @@ const BlockColor COLOR_GREEN = { COLOR_GREEN_FILL, COLOR_GREEN_BORDER };
 volatile unsigned char *frame0 = (unsigned char*) 0x08000000;
 volatile unsigned char *frame1 = (unsigned char*) 0x08000000 + SCREEN_WIDTH * SCREEN_HEIGHT;
 volatile unsigned int  *vga_ctrl = (unsigned int*) 0x04000100;
+
+/* Pointer to the buffer we are currently drawing into (back buffer). */
+static volatile unsigned char *draw_frame = (unsigned char*)0x08000000;  // start with frame0
 
 /* function to place a pixel at the specified (x,y) coordinate,
  * (0,0) is the top left of the screen, increasing in x and y values going right and down respectively. 
@@ -119,7 +126,15 @@ void draw_background(void)
 
 void vga_show_frame(void)
 {
-    vga_ctrl[1] = (unsigned int)frame0; // BackBuffer = frame0
-    vga_ctrl[0] = 0;                    // trigger swap
+	// Tell VGA which buffer we want to show next (the one we just drew into)
+    vga_ctrl[1] = (unsigned int)draw_frame;
+    vga_ctrl[0] = 0;  // trigger hardware swap
+
+    // Now swap our software notion of back buffer
+    if (draw_frame == frame0) {
+        draw_frame = frame1;
+    } else {
+        draw_frame = frame0;
+    }
 }
 

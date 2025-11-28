@@ -26,7 +26,7 @@ typedef struct {
 #define COLOR_GRID RGB332(5, 5, 2)
 #define COLOR_BACKGROUND RGB332(3, 4, 2)
 
-#define COLOR_RED_FILL RGB332(5, 0, 0)
+#define COLOR_RED_FILL RGB332(6, 0, 0)
 #define COLOR_RED_BORDER RGB332(3, 0, 0)
 extern const BlockColor COLOR_RED;
 
@@ -38,10 +38,30 @@ extern const BlockColor COLOR_BLUE;
 #define COLOR_GREEN_BORDER RGB332(0, 3, 0)
 extern const BlockColor COLOR_GREEN;
 
+#define COLOR_YELLOW_FILL   RGB332(7, 7, 0)
+#define COLOR_YELLOW_BORDER RGB332(5, 5, 0)
+extern const BlockColor COLOR_YELLOW;
+
+// Cyan (I piece)
+#define COLOR_CYAN_FILL   RGB332(0, 6, 3)
+#define COLOR_CYAN_BORDER RGB332(0, 4, 2)
+extern const BlockColor COLOR_CYAN;
+
+// Purple (T piece)
+#define COLOR_PURPLE_FILL   RGB332(5, 0, 3)
+#define COLOR_PURPLE_BORDER RGB332(3, 0, 2)
+extern const BlockColor COLOR_PURPLE;
+
+// Orange (L piece)
+#define COLOR_ORANGE_FILL   RGB332(7, 4, 0)
+#define COLOR_ORANGE_BORDER RGB332(6, 3, 0)
+extern const BlockColor COLOR_ORANGE;
+
 // Framebuffers and control registers (defined in vga.c)
 extern volatile unsigned char *frame0;
 extern volatile unsigned char *frame1;
 extern volatile unsigned int *vga_ctrl;
+extern static volatile unsigned char *draw_frame;
 
 // Drawing functions
 void put_pixel(int x, int y, unsigned char color);
