@@ -17,8 +17,8 @@ int invocations = 0;
 
 
 struct shapes currentshape;
+//stored block, .type is defined as -1 when empty
 struct shapes stored;
-
 
 void gameOver();
 int gameOverCheck();
@@ -37,78 +37,7 @@ int isValid();
 void store();
 void setpos(struct shapes *shape);
 
-void handle_interrupt(unsigned cause){
-     if (cause==16){
-  volatile short* volatile TO; 
-  TO=(short*)0x04000020;
-  *TO=0;
-  invocations++;
-  if(invocations==10/mult){
-    invocations=0;
-    down();
-  
-  }
-//button
-}if(cause==18){
-    volatile int *  ptr;
-    ptr=(int*)0x040000d0;
-    int press = *ptr & 0xF;
-    if(press==1){
-        left();
-    }
-    if(press==2){
-        store();
-    }
-    if(press==4){
-        rotate();
-    }
-    if(press==8){
-        right();
-    }
 
-
-    ptr+=3;
-    int config=*ptr;
-    config|=1<<0;
-    *ptr=config;
-  
-}
-    gameState();
-
-}
-
-/**
- * 
- * 
- */
-void labinit(void)
-{
-  enable_interrupt();
-  volatile int* volatile ptr; 
-  ptr=(int*)0x4000020;
-  *ptr=0;
-  int time = 3000000; //30 Mhz/10 is 3 million actions to get 100 ms  
-  int periodh = time>>16;
-  int periodl = time & 0xffff;
-  ptr+=2;
-  *ptr=periodl;
-  ptr+=1;
-  *ptr=periodh;
-  ptr-=2;
-  int config = *ptr;
-  config|=1<<2; // bitwise logic to set bitt <<k to one
-  config|=1<<1;
-  config|=1<<0;
-  *ptr=config;
-
-  //buttons
-  volatile int *  ptr2;
-  ptr2=(int*)0x040000d0;
-  ptr2+=2;
-  *ptr2=1;
-  ptr2++;
-  
-}
 
 
 /** reachedBottom
@@ -459,7 +388,11 @@ void start(){
     labinit();
     srand(time(NULL));
     newBlock();
-    playingGrid[][]={0};
+    for (int i = 0; i < 20; i++){
+        for (int j = 0; j < 10; j++){
+            playingGrid[i][j] = 0;
+        }
+    }
     scores=0;
     gameon =1;
     mult = 1;
