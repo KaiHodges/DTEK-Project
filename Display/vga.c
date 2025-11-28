@@ -8,10 +8,22 @@
 #define GRID_LEFT   100
 #define GRID_TOP    0
 
+//Structs for block colors
+const BlockColor COLOR_RED   = { COLOR_RED_FILL,   COLOR_RED_BORDER };
+const BlockColor COLOR_BLUE  = { COLOR_BLUE_FILL,  COLOR_BLUE_BORDER };
+const BlockColor COLOR_GREEN = { COLOR_GREEN_FILL, COLOR_GREEN_BORDER };
+
+
+/* pointers to image buffers to create the images,
+ * also a pointer to vga controls to choose image being displayed. 
+*/
 volatile unsigned char *frame0 = (unsigned char*) 0x08000000;
 volatile unsigned char *frame1 = (unsigned char*) 0x08000000 + SCREEN_WIDTH * SCREEN_HEIGHT;
 volatile unsigned int  *vga_ctrl = (unsigned int*) 0x04000100;
 
+/* function to place a pixel at the specified (x,y) coordinate,
+ * (0,0) is the top left of the screen, increasing in x and y values going right and down respectively. 
+*/ 
 void put_pixel(int x, int y, unsigned char color) 
 {
     if (x < 0 || x >= SCREEN_WIDTH || y < 0 || y >= SCREEN_HEIGHT) {
@@ -21,6 +33,8 @@ void put_pixel(int x, int y, unsigned char color)
     frame0[y * SCREEN_WIDTH + x] = color; 
 } 
 
+/* Helper function to clear the screen. 
+*/
 void clear_screen()
 {
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
@@ -28,30 +42,12 @@ void clear_screen()
     }
 }
 
-static unsigned char darker(unsigned char c)
-{
-    // Extract RGB components
-    unsigned char r = (c >> 5) & 0x7;
-    unsigned char g = (c >> 2) & 0x7;
-    unsigned char b =  c       & 0x3;
-
-    // Darken them safely (prevent underflow)
-    if (r > 0) r-= 2;
-    if (g > 0) g-= 2;
-    if (b > 0) b--;
-
-    // Pack back into RGB332
-    return (r << 5) | (g << 2) | b;
-}
-
 // fill a square in the grid with the chosen color
-void fill_square(int x, int y, unsigned char color) 
+void fill_square(int x, int y, BlockColor color) 
 {		
 		int x_start = 12 * x + GRID_LEFT + 1; 
 		int y_start = 12 * y; 
 		
-		unsigned char border = darker(color); 
-
 		for (int i = 0; i < 11; i++) {
 			for (int j = 0; j < 11; j++) {
 
@@ -61,16 +57,17 @@ void fill_square(int x, int y, unsigned char color)
       	if ((i == 0 || i == 10) && (j == 0 || j == 10)) {continue; } // Skip the four corner pixels
 				
 				if (is_border || is_corner) 
-					put_pixel(x_start + i, y_start + j, border);
+					put_pixel(x_start + i, y_start + j, color.border);
 				else 
-					put_pixel(x_start + i, y_start + j, color);
+					put_pixel(x_start + i, y_start + j, color.fill);
 			} 
 		} 
 }
 
 void clear_square(int x, int y) 
 {
-	fill_square(x,y,COLOR_BLACK);
+	BlockColor BLACK = {COLOR_BLACK, COLOR_BLACK};
+	fill_square(x,y,BLACK);
 }
 
 void draw_grid(void) 
@@ -119,9 +116,6 @@ void draw_background(void)
 		}
 		
 }
-
-
-
 
 void vga_show_frame(void)
 {

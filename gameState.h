@@ -4,8 +4,8 @@
 #include "shapes.h"
 #define RAND_MAX = 6;
 
-//the playing grid wich is a 10 by 20 grid, where first element is row and second colum,
-//ie x and y, [0][0] is the top left corner and [10][20 is bottom right corner
+//the playing grid which is a 10 by 20 grid, where first element is row and second column,
+//i.e x and y, [0][0] is the top left corner and [10][20] is bottom right corner
 //here 0 symbolises empty and NOT 0 symbolizes that is filled by a block.
 //potentially you can use the values to symbolise a specific color, 
 //this might not be done in this implimitation depending on available time
@@ -255,7 +255,7 @@ int gameState(){
     return 1;
 }
 /**right
- * moves the player right if it is a lega move
+ * moves the player right if it is a legal move
  * 
  */
 void right(){
