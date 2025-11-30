@@ -1,7 +1,22 @@
 #include "vga.h"
 #include "gameState.h"
+#include "shapes.h"   // for struct shapes
 
-void newGame();
+int playingGrid[10][20] = {0};
+int scores = 0;
+int gameon = 1;
+int mult = 1;
+int invocations = 0;
+
+struct shapes currentshape;
+struct shapes stored;
+
+extern void enable_interrupt(void); // needs to be declared for the compiler
+
+void newGame(void){
+	start();
+}
+
 void handle_interrupt(unsigned cause){
 	if (cause==16){
 		volatile short* volatile TO; 
@@ -90,9 +105,6 @@ void labinit(void)
   ptr3+=2;
   *ptr3=771;
 
-}
-void newGame(){
-	start();
 }
 /* This is the main function */
 int main()
