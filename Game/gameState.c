@@ -1,5 +1,27 @@
 #include "gameState.h"
+#include <stdint.h>   // for uint32_t
 
+/* ---- Minimal RNG + time stubs (because we're not linking full libc) ---- */
+
+static uint32_t rng_state = 1;
+
+void srand(unsigned int seed) {
+    if (seed == 0) seed = 1;
+    rng_state = seed;
+}
+
+int rand(void) {
+    // simple linear congruential generator
+    rng_state = rng_state * 1103515245u + 12345u;
+    return (rng_state >> 16) & 0x7FFF;  // value in [0, 32767]
+}
+
+time_t time(time_t *t) {
+    // fake monotonically increasing time
+    static time_t fake = 1;
+    if (t) *t = fake;
+    return fake++;
+}
 /* ===== Global variable definitions ===== */
 
 int playingGrid[10][20] = {0};

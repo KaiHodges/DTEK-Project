@@ -2,15 +2,6 @@
 #include "gameState.h"
 #include "shapes.h"   // for struct shapes
 
-int playingGrid[10][20] = {0};
-int scores = 0;
-int gameon = 1;
-int mult = 1;
-int invocations = 0;
-
-struct shapes currentshape;
-struct shapes stored;
-
 extern void enable_interrupt(void); // needs to be declared for the compiler
 
 void newGame(void){
