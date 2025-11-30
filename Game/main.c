@@ -50,6 +50,8 @@ void handle_interrupt(unsigned cause){
 	
 	gameState();
 
+	vga_draw_game();
+
 }
 
 /**
@@ -98,15 +100,9 @@ int main()
 	labinit();
 	clear_screen();
 
-	draw_background();
-	
-	fill_square(3,10,COLOR_RED);
-	fill_square(4,10,COLOR_RED); 
-	fill_square(5,10,COLOR_RED);
-	fill_square(4,9,COLOR_RED);
+	start();
 
-
-	vga_show_frame();
+	vga_draw_game(); 
 
   // Enter a forever loop
   while (1)

@@ -1,7 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stbool.h>
+#include <stdbool.h>
 #include "vga.h"
+#include "gameState.h"
 
 #define CELL_SIZE   12
 #define GRID_COLS   10
@@ -18,6 +17,24 @@ const BlockColor COLOR_CYAN    = { COLOR_CYAN_FILL,    COLOR_CYAN_BORDER };
 const BlockColor COLOR_PURPLE  = { COLOR_PURPLE_FILL,  COLOR_PURPLE_BORDER };
 const BlockColor COLOR_ORANGE  = { COLOR_ORANGE_FILL,  COLOR_ORANGE_BORDER };
 
+static BlockColor color_for_type(int type)
+{
+    switch (type) {
+        case 1: return COLOR_CYAN;    // I
+        case 2: return COLOR_YELLOW;  // O
+        case 3: return COLOR_ORANGE;  // L
+        case 4: return COLOR_BLUE;    // J
+        case 5: return COLOR_PURPLE;  // T
+        case 6: return COLOR_GREEN;   // S
+        case 7: return COLOR_RED;     // Z
+        default: {
+            BlockColor black = { COLOR_BLACK, COLOR_BLACK };
+            return black;
+        }
+    }
+}
+
+
 /* pointers to image buffers to create the images,
  * also a pointer to vga controls to choose image being displayed. 
 */
@@ -26,7 +43,7 @@ volatile unsigned char *frame1 = (unsigned char*) 0x08000000 + SCREEN_WIDTH * SC
 volatile unsigned int  *vga_ctrl = (unsigned int*) 0x04000100;
 
 /* Pointer to the buffer we are currently drawing into (back buffer). */
-static volatile unsigned char *draw_frame = (unsigned char*)0x08000000;  // start with frame0
+volatile unsigned char *draw_frame = (unsigned char*)0x08000000;  // start with frame0
 
 /* function to place a pixel at the specified (x,y) coordinate,
  * (0,0) is the top left of the screen, increasing in x and y values going right and down respectively. 
@@ -37,7 +54,7 @@ void put_pixel(int x, int y, unsigned char color)
         return;
     } 
 		
-    frame0[y * SCREEN_WIDTH + x] = color; 
+		draw_frame[y * SCREEN_WIDTH + x] = color; 
 } 
 
 /* Helper function to clear the screen. 
@@ -45,7 +62,7 @@ void put_pixel(int x, int y, unsigned char color)
 void clear_screen()
 {
     for (int i = 0; i < SCREEN_WIDTH * SCREEN_HEIGHT; i++) {
-        frame0[i] = COLOR_BLACK; 
+        draw_frame[i] = COLOR_BLACK; 
     }
 }
 
@@ -126,15 +143,52 @@ void draw_background(void)
 
 void vga_show_frame(void)
 {
-	// Tell VGA which buffer we want to show next (the one we just drew into)
+	// tell VGA which buffer we want to show next (the one we just drew into)
     vga_ctrl[1] = (unsigned int)draw_frame;
     vga_ctrl[0] = 0;  // trigger hardware swap
 
-    // Now swap our software notion of back buffer
+    // now swap our software notion of back buffer
     if (draw_frame == frame0) {
         draw_frame = frame1;
     } else {
         draw_frame = frame0;
     }
 }
+
+void vga_draw_game(void)
+{
+    clear_screen();    // clear back buffer and draw static background
+    draw_background();
+
+    // draw all locked blocks from the playing grid
+    for (int x = 0; x < GRID_COLS; x++) {
+        for (int y = 0; y < GRID_ROWS; y++) {
+            int type = playingGrid[x][y]; // 0 = empty, >0 = block type
+            if (type != 0) {
+                BlockColor c = color_for_type(type);
+                fill_square(x, y, c);
+            }
+        }
+    }
+
+    // draw current falling shape 
+    if (currentshape.type > 0) {
+        BlockColor cur = color_for_type(currentshape.type);
+        for (int i = 0; i < 4; i++) {
+            int x = currentshape.x[i];
+            int y = currentshape.y[i];
+            if (y >= 0 && y < GRID_ROWS) {   // ignore pieces above top
+                fill_square(x, y, cur);
+            }
+        }
+    }
+
+    // gonna put to draw stored piece somewhere off to the side here too 
+
+    // show the frame
+    vga_show_frame();
+}
+
+
+
 

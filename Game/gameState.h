@@ -9,16 +9,16 @@
 //here 0 symbolises empty and NOT 0 symbolizes that is filled by a block.
 //potentially you can use the values to symbolise a specific color, 
 //this might not be done in this implimitation depending on available time
-int playingGrid[10][20]={0};
-int scores=0;
-int gameon =1;
-int mult = 1;
-int invocations = 0;
+extern int playingGrid[10][20];
+extern int scores;
+extern int gameon ;
+extern int mult;
+extern int invocations;
 
 
-struct shapes currentshape;
+extern struct shapes currentshape;
 //stored block, .type is defined as -1 when empty
-struct shapes stored;
+extern struct shapes stored;
 
 void gameOver();
 int gameOverCheck();
@@ -77,7 +77,7 @@ int reachedBottom(){
  * no returns
  */
 void newBlock(){
-    int x = rand()+1;
+    int x = rand()+1; 
     currentshape.type=x;
     setpos(&currentshape);
 }
@@ -385,7 +385,7 @@ void store(){
 
 void start(){
     stored.type=-1;
-    labinit();
+    // labinit(); i think this is unnecessary since its called in main
     srand(time(NULL));
     newBlock();
     for (int y = 0; y < 20; y++){
