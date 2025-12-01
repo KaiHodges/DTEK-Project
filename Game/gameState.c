@@ -36,19 +36,19 @@ struct shapes stored;
 /* ===== Function implementations ===== */
 
 int reachedBottom(void){
-    int y1 = currentshape.y[0] + 1;
-    int y2 = currentshape.y[1] + 1;
-    int y3 = currentshape.y[2] + 1;
-    int y4 = currentshape.y[3] + 1;
+    int y1 = currentshape.y[0];
+    int y2 = currentshape.y[1];
+    int y3 = currentshape.y[2];
+    int y4 = currentshape.y[3];
     int x1 = currentshape.x[0];
     int x2 = currentshape.x[1];
     int x3 = currentshape.x[2];
     int x4 = currentshape.x[3];
 
-    if (y1 == 20 || playingGrid[x1][y1] != 0) return 1;
-    if (y2 == 20 || playingGrid[x2][y2] != 0) return 1;
-    if (y3 == 20 || playingGrid[x3][y3] != 0) return 1;
-    if (y4 == 20 || playingGrid[x4][y4] != 0) return 1;
+    if (y1 == 19 || playingGrid[x1][y1+1] != 0) return 1;
+    if (y2 == 19 || playingGrid[x2][y2+1] != 0) return 1;
+    if (y3 == 19 || playingGrid[x3][y3+1] != 0) return 1;
+    if (y4 == 19 || playingGrid[x4][y4+1] != 0) return 1;
 
     return 0;
 }
@@ -121,11 +121,6 @@ void lockPos(void){
 int gameState(void){
     if (reachedBottom()) {
         lockPos();
-        score(checkRows());
-        if (!gameOverCheck()) {
-            gameOver();
-            return 0;
-        }
         newBlock();
     }
     return 1;
@@ -150,22 +145,25 @@ int checkRows(void){
         int emptyFound = 0;
 
         for (int x = 0; x < 10; x++)
-            if (playingGrid[x][y] != 0)
+            if (playingGrid[x][y] == 0){
                 emptyFound = 1;
-
-        if (!emptyFound) {
+                break;
+            }
+        if (emptyFound==0) {
             rowsCleared++;
 
-            for (int x = 0; x < 10; x++)
+            for (int x = 0; x < 10; x++){
                 playingGrid[x][y] = 0;
+            }
 
-            for (int y2 = y; y2 > 0; y2--)
+            for (int y2 = y; y2 > 0; y2--){
                 for (int x = 0; x < 10; x++)
                     playingGrid[x][y2] = playingGrid[x][y2 - 1];
+            }
 
-            for (int x = 0; x < 10; x++)
+            for (int x = 0; x < 10; x++){
                 playingGrid[x][0] = 0;
-
+            }
             y++;
         }
     }

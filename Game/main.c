@@ -9,15 +9,25 @@ void newGame(void){
 }
 
 void handle_interrupt(unsigned cause){
-	if (cause==16){
+	if (cause==16&&gameon==1){
 		volatile short* volatile TO; 
 		TO=(short*)0x04000020;
 		*TO=0;
 		invocations++;
-		if(invocations==10/mult){
+		if(invocations==3/mult){
 			invocations=0;
-			down();
-  
+			if (reachedBottom()==1) {
+				lockPos();
+				score(checkRows());
+				if(gameOverCheck()==0){
+					gameOver();
+				}else{
+        		newBlock();
+				}
+    		}
+			else{
+				down();
+			}
  		}
 	}else if(cause==17){
 		volatile int *ptr = (int*)0x04000010;
@@ -38,11 +48,8 @@ void handle_interrupt(unsigned cause){
 			left();
 		}
 		
-		// Clear interrupt
-		ptr += 3;
-		int config = *ptr;
-		config |= (1 << 0);
-		*ptr = config;
+		*ptr = 0xFFFFFFFF;
+
 	} else if(cause==18){
 		volatile int *  ptr;
 		ptr=(int*)0x040000d0;
@@ -54,8 +61,6 @@ void handle_interrupt(unsigned cause){
 	
 	}
 	
-	gameState();
-
 	vga_draw_game();
 
 }
@@ -108,6 +113,6 @@ int main()
 	vga_draw_game(); 
 
   // Enter a forever loop
-  while (1)
+  while (gameon==1)
     { }
 }
