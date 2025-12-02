@@ -25,7 +25,6 @@ void right(void);
 void left(void);
 int checkRows(void);
 int gameOverCheck(void);
-void gameOver(void);
 void score(int rows);
 void rotate(void);
 void rotateBlock(int pivotx, int pivoty);
