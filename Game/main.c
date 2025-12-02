@@ -7,6 +7,9 @@ extern void enable_interrupt(void); // needs to be declared for the compiler
 void newGame(void){
 	start();
 }
+void gameOver(void){
+    gameon = 0;
+}
 
 void handle_interrupt(unsigned cause){
 	if (cause==16&&gameon==1){
@@ -29,7 +32,7 @@ void handle_interrupt(unsigned cause){
 				down();
 			}
  		}
-	}else if(cause==17){
+	}else if(cause==17&&gameon==1){
 		volatile int *ptr = (int*)0x04000010;
 		ptr+=3;
 		int switchState = *ptr;  
@@ -50,7 +53,7 @@ void handle_interrupt(unsigned cause){
 		
 		*ptr = 0xFFFFFFFF;
 
-	} else if(cause==18){
+	} else if(cause==18&&gameon!=1){
 		volatile int *  ptr;
 		ptr=(int*)0x040000d0;
 		ptr+=3;
@@ -108,11 +111,10 @@ int main()
 	labinit();
 	clear_screen();
 
-	start();
 
 	vga_draw_game(); 
 
   // Enter a forever loop
-  while (gameon==1)
+  while (1)
     { }
 }

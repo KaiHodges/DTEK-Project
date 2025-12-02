@@ -29,6 +29,7 @@ int scores = 0;
 int gameon = 1;
 int mult = 1;
 int invocations = 0;
+int storing =0;
 
 struct shapes currentshape;
 struct shapes stored;
@@ -57,6 +58,8 @@ void newBlock(void){
     int x = (rand() % NUM_SHAPES) + 1;
     currentshape.type = x;
     setpos(&currentshape);
+    storing=0;
+
 }
 
 void setpos(struct shapes *shape){
@@ -178,9 +181,7 @@ int gameOverCheck(void){
     return 1;
 }
 
-void gameOver(void){
-    gameon = 0;
-}
+
 
 void score(int rows){
     int tot = rows * 100 * mult;
@@ -233,14 +234,17 @@ int isValid(void){
 }
 
 void store(void){
-    if (stored.type == -1) {
-        stored = currentshape;
-        newBlock();
-    } else {
-        struct shapes tmp = currentshape;
-        currentshape = stored;
-        stored = tmp;
-        setpos(&currentshape);
+    if (storing==0){
+        storing=1;
+        if (stored.type == -1) {
+            stored = currentshape;
+            newBlock();
+        } else {
+            struct shapes tmp = currentshape;
+            currentshape = stored;
+            stored = tmp;
+            setpos(&currentshape);
+        }
     }
 }
 
