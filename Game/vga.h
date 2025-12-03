@@ -38,22 +38,22 @@ extern const BlockColor COLOR_BLUE;
 #define COLOR_GREEN_BORDER RGB332(0, 3, 0)
 extern const BlockColor COLOR_GREEN;
 
-#define COLOR_YELLOW_FILL   RGB332(7, 7, 0)
+#define COLOR_YELLOW_FILL RGB332(7, 7, 0)
 #define COLOR_YELLOW_BORDER RGB332(5, 5, 0)
 extern const BlockColor COLOR_YELLOW;
 
 // Cyan (I piece)
-#define COLOR_CYAN_FILL   RGB332(0, 6, 3)
+#define COLOR_CYAN_FILL RGB332(0, 6, 3)
 #define COLOR_CYAN_BORDER RGB332(0, 4, 2)
 extern const BlockColor COLOR_CYAN;
 
 // Purple (T piece)
-#define COLOR_PURPLE_FILL   RGB332(5, 0, 3)
+#define COLOR_PURPLE_FILL RGB332(5, 0, 3)
 #define COLOR_PURPLE_BORDER RGB332(3, 0, 2)
 extern const BlockColor COLOR_PURPLE;
 
 // Orange (L piece)
-#define COLOR_ORANGE_FILL   RGB332(7, 4, 0)
+#define COLOR_ORANGE_FILL RGB332(7, 4, 0)
 #define COLOR_ORANGE_BORDER RGB332(6, 3, 0)
 extern const BlockColor COLOR_ORANGE;
 
@@ -63,12 +63,19 @@ extern volatile unsigned char *frame1;
 extern volatile unsigned int *vga_ctrl;
 extern volatile unsigned char *draw_frame;
 
-// Drawing functions
+// Drawing functions & helpers
+static void draw_char(int x, int y, char c, unsigned char color);
+static void draw_string(int x, int y, const char *s, unsigned char color);
+static void int_to_str(int value, char *buf);
 void put_pixel(int x, int y, unsigned char color);
 void clear_screen();
 void fill_square(int x, int y, BlockColor color);
 void draw_grid(void);
 void draw_background(void);
+void draw_start_screen(void);
+void draw_gameover_screen(int finalscore);
+void vga_draw_startscreen(void);
+void vga_draw_gameover(int finalscore);
 
 // Swap to show current frame
 void vga_show_frame(void);

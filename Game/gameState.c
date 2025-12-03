@@ -26,7 +26,7 @@ time_t time(time_t *t) {
 
 int playingGrid[10][20] = {0};
 int scores = 0;
-int gameon = 1;
+int gameon = 2;
 int mult = 1;
 int invocations = 0;
 int storing =0;
