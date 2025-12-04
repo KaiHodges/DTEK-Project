@@ -8,6 +8,7 @@ void newGame(void) { start(); }
 void gameOver(void) { gameon = 0; }
 
 void handle_interrupt(unsigned cause) {
+  seed++;
   if (cause == 16 && gameon == 1) {
     volatile short *volatile TO;
     TO = (short *)0x04000020;
@@ -32,6 +33,7 @@ void handle_interrupt(unsigned cause) {
     volatile int *ptr = (int *)0x04000010;
     ptr += 3;
     int switchState = *ptr;
+    *ptr = 0xFFFFFFFF;
 
     if (switchState & 0x1) {
       right();
@@ -45,8 +47,7 @@ void handle_interrupt(unsigned cause) {
     if (switchState & 0x200) {
       left();
     }
-
-    *ptr = 0xFFFFFFFF;
+    for(int i =0; i<4;i++){}
 
   } else if (cause == 18) {
     volatile int *ptr;
@@ -59,6 +60,20 @@ void handle_interrupt(unsigned cause) {
 		if (gameon == 2 || gameon == 0) {
 			newGame();
 			}
+      if(gameon==1){
+        if (reachedBottom() == 1) {
+        lockPos();
+        score(checkRows());
+        if (gameOverCheck() == 0) {
+          gameOver();
+          vga_draw_gameover(scores);
+        } else {
+          newBlock();
+        }
+      } else {
+        down();
+      }
+    }
 	}
 
 	if (gameon == 2) {

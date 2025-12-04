@@ -1,27 +1,54 @@
 #include "gameState.h"
-#include <stdint.h>   // for uint32_t
+#include <stdint.h>   // uint32_t
 
-/* ---- Minimal RNG + time stubs (because we're not linking full libc) ---- */
+/**the following part is our implimentation of a random numbergenerator
+ * the algorithm uses lcg, we have not reinvented the weel
+ */
 
-static uint32_t rng_state = 1;
+uint32_t seed =0;
+uint32_t lcg_parkmiller(uint32_t *state);
+static uint32_t rngNumber = 0;
 
-void srand(unsigned int seed) {
+void srand() {
     if (seed == 0) seed = 1;
-    rng_state = seed;
+    rngNumber = seed;
+}
+uint32_t rand(void){
+    lcg_parkmiller(&rngNumber);
+    return rngNumber;
 }
 
-int rand(void) {
-    // simple linear congruential generator
-    rng_state = rng_state * 1103515245u + 12345u;
-    return (rng_state >> 16) & 0x7FFF;  // value in [0, 32767]
+/**recreating random numbergenerators is an idiotic task and will lead to poor generation
+ * park miller uses lcg ( linear congruential generator) which uses modulo calculations
+ * they build upon  D. H. Lehmer algorithm proposed in 1951 which has been the most influational
+ * system. We Chose to use the already existing implimentation. The function belowe is from
+ * wikipedias page about lehmer generators and with function name
+ * uint32_t lcg_parkmiller(uint32_t *state)
+ * link:https://en.wikipedia.org/wiki/Lehmer_random_number_generator
+ * the reason we use this is since the compiler does not allow nonstandard libraries
+ */
+uint32_t lcg_parkmiller(uint32_t *state)
+{
+	// Precomputed parameters for Schrage's method
+	const uint32_t M = 0x7fffffff;
+	const uint32_t A = 48271;
+	const uint32_t Q = M / A;    // 44488
+	const uint32_t R = M % A;    //  3399
+
+	uint32_t div = *state / Q;	// max: M / Q = A = 48,271
+	uint32_t rem = *state % Q;	// max: Q - 1     = 44,487
+
+	int32_t s = rem * A;	// max: 44,487 * 48,271 = 2,147,431,977 = 0x7fff3629
+	int32_t t = div * R;	// max: 48,271 *  3,399 =   164,073,129
+	int32_t result = s - t;
+
+	if (result < 0)
+		result += M;
+
+	return *state = result;
 }
 
-time_t time(time_t *t) {
-    // fake monotonically increasing time
-    static time_t fake = 1;
-    if (t) *t = fake;
-    return fake++;
-}
+
 /* ===== Global variable definitions ===== */
 
 int playingGrid[10][20] = {0};
@@ -184,8 +211,9 @@ int gameOverCheck(void){
 
 
 void score(int rows){
-    int tot = rows * 100 * mult;
+    int tot = rows*rows * 100 * mult;
     scores += tot;
+    
     mult = scores / 1000;
     if (mult < 1) mult = 1;
 }
@@ -250,7 +278,7 @@ void store(void){
 
 void start(void){
     stored.type = -1;
-    srand(time(NULL));
+    srand();
 
     newBlock();
 

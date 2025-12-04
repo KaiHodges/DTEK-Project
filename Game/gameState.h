@@ -1,12 +1,12 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 
-#include <stdlib.h>
-#include <time.h>
 #include "shapes.h"
+#include <stdint.h> 
 
 #define NUM_SHAPES 7
 
+extern uint32_t seed;
 extern int playingGrid[10][20];
 extern int scores;
 extern int gameon;
