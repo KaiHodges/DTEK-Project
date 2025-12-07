@@ -7,7 +7,8 @@ Assuming you have the neccesary software to use the DTEK-V board all you need to
 ## Controls
 Button 1: starts the game when on the start screen or on the gameOver screen, while in the game it works as a down button.
 
-Switches
+Switches:
+
 Rightmost switch (00): moves the block to the right if it is legal
 
 Second rightmost switch (01): rotates the block if it is legal
