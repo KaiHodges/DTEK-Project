@@ -1,3 +1,4 @@
+//written by Kai Hodges
 #include <stdbool.h>
 #include <stdint.h>
 #include "vga.h"

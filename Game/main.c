@@ -1,3 +1,4 @@
+//written by Kai Hodges and Lucas Dahlgren with Lab3 as a base
 #include "gameState.h"
 #include "shapes.h" // for struct shapes
 #include "vga.h"

@@ -1,3 +1,4 @@
+//written by Lucas Dahlgren and Kai Hodges
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 

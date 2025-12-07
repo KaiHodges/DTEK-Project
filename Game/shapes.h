@@ -1,4 +1,4 @@
-
+//Written by Lucas Dahlgren
 struct shapes
 {
     int type;

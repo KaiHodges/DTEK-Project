@@ -1,3 +1,4 @@
+//Written by Lucas Dahlgren except lcg_parkmiller see section for specifics
 #include "gameState.h"
 #include <stdint.h>   // uint32_t
 
